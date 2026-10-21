@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Le coût réel des écrans</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg: #0f0f11;
+      --card-bg: #18181c;
+      --text: #ececec;
+      --text-muted: #8e8e93;
+      --red: #ff3b30;
+      --gray: #3a3a3c;
+      --white: #ffffff;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    input[type="range"] {
+      accent-color: var(--red);
+    }
+  </style>
+</head>
+<body class="min-h-screen py-10 px-4 flex justify-center items-start">
+
+  <div class="max-w-2xl w-full flex flex-col gap-8">
+    
+    <!-- En-tête -->
+    <header class="space-y-2">
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Le coût réel des écrans</h1>
+      <p class="text-neutral-400 text-base sm:text-lg">Découvre le temps que te volent les écrans.</p>
+    </header>
+
+    <!-- Sliders de saisie -->
+    <section class="bg-[#18181c] p-6 rounded-xl border border-neutral-800 flex flex-col gap-6 shadow-xl">
+      <div class="flex flex-col gap-2">
+        <div class="flex justify-between items-center text-sm font-semibold">
+          <label for="sleep" class="text-neutral-200">Sommeil quotidien</label>
+          <span class="text-[#ff3b30] font-mono text-base" id="sleepVal">8 h</span>
+        </div>
+        <input type="range" id="sleep" min="4" max="12" step="0.5" value="8" class="w-full h-2 bg-neutral-700 rounded-lg appearance-none cursor-pointer">
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <div class="flex justify-between items-center text-sm font-semibold">
+          <label for="app" class="text-neutral-200">Temps passé sur l'application chaque jour</label>
+          <span class="text-[#ff3b30] font-mono text-base" id="appVal">1 h 00 min</span>
+        </div>
+        <input type="range" id="app" min="0.25" max="12" step="0.25" value="1" class="w-full h-2 bg-neutral-700 rounded-lg appearance-none cursor-pointer">
+      </div>
+    </section>
+
+    <!-- Cartes Métriques (2 cartes) -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="bg-[#18181c] border border-neutral-800 p-5 rounded-xl flex flex-col gap-1">
+        <span class="text-xs uppercase tracking-wider text-neutral-400 font-medium">Vie consciente gâchée</span>
+        <span class="text-3xl font-extrabold text-[#ff3b30]" id="percentWasted">0 %</span>
+      </div>
+      <div class="bg-[#18181c] border border-neutral-800 p-5 rounded-xl flex flex-col gap-1">
+        <span class="text-xs uppercase tracking-wider text-neutral-400 font-medium">Équivalent éveil / an</span>
+        <span class="text-3xl font-extrabold text-white" id="daysWasted">0 jours</span>
+      </div>
+    </section>
+
+    <!-- Explication dynamique du Temps d'éveil -->
+    <section class="bg-[#ff3b30]/10 border-l-4 border-[#ff3b30] p-4 sm:p-5 rounded-r-xl text-neutral-200 text-sm sm:text-base leading-relaxed" id="explanationText">
+      --
+    </section>
+
+    <!-- Cartes des Concepts Clés -->
+    <section class="flex flex-col gap-4">
+      <article class="bg-[#18181c] border border-neutral-800 p-5 rounded-xl space-y-2">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#ff3b30]"></span>
+          Le Coma Numérique
+        </h3>
+        <p class="text-sm text-neutral-400 leading-relaxed">
+          Un état d'absence éveillée où l'attention est capturée par un flux de vidéos et de textes sans valeur résiduelle. Contrairement au sommeil, qui restaure l'organisme, ou au repos véritable, qui laisse l'esprit vagabonder, le coma numérique annule la présence au monde tout en consommant de l'énergie nerveuse. Le temps y est perdu sans laisser de souvenir ni de bénéfice.
+        </p>
+      </article>
+
+      <article class="bg-[#18181c] border border-neutral-800 p-5 rounded-xl space-y-2">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-white"></span>
+          Le Coût d'Opportunité
+        </h3>
+        <p class="text-sm text-neutral-400 leading-relaxed">
+          Le coût réel d'une action ne se mesure pas à ce qu'elle prend, mais à tout ce qu'elle empêche. Chaque heure passée à scroller n'est pas neutre : c'est une heure retirée aux relations humaines, à la maîtrise d'un savoir-faire, à la lecture, au repos réel, à l'activité physique ou à la création.
+        </p>
+      </article>
+    </section>
+
+    <!-- Coût d'opportunité réajusté -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-white">Ce que ce temps représente réellement</h2>
+      <p class="text-sm text-neutral-400">Sans survendre un idéal de productivité, voici l'impact concret de ces heures réallouées à des habitudes simples et tenables :</p>
+      <ul class="flex flex-col gap-2.5 text-sm" id="opportunityList">
+        <!-- Éléments générés dynamiquement -->
+      </ul>
+    </section>
+
+  </div>
+
+  <script>
+    const sleepInput = document.getElementById('sleep');
+    const appInput = document.getElementById('app');
+
+    const sleepVal = document.getElementById('sleepVal');
+    const appVal = document.getElementById('appVal');
+
+    const percentWastedEl = document.getElementById('percentWasted');
+    const daysWastedEl = document.getElementById('daysWasted');
+    const explanationTextEl = document.getElementById('explanationText');
+    const opportunityListEl = document.getElementById('opportunityList');
+
+    function formatAppTime(hours) {
+      const h = Math.floor(hours);
+      const m = Math.round((hours - h) * 60);
+      if (h === 0) return `${m} min`;
+      if (m === 0) return `${h} h`;
+      return `${h} h ${m < 10 ? '0' : ''}${m} min`;
+    }
+
+    function update() {
+      const sleepHours = parseFloat(sleepInput.value);
+      const appHours = parseFloat(appInput.value);
+
+      sleepVal.textContent = `${sleepHours} h`;
+      appVal.textContent = formatAppTime(appHours);
+
+      const awakeHours = 24 - sleepHours;
+      const wastedRatio = appHours / awakeHours;
+      const percentWasted = (wastedRatio * 100).toFixed(1);
+
+      const annualWastedHours = appHours * 365;
+      const wastedAwakeDays = (annualWastedHours / awakeHours).toFixed(1);
+
+      percentWastedEl.textContent = `${percentWasted} %`;
+      daysWastedEl.textContent = `${wastedAwakeDays} jours`;
+
+      explanationTextEl.innerHTML = `
+        Sur tes 24 heures, tu consacres <strong>${sleepHours}h</strong> au sommeil. Ton temps d'éveil réel est donc de <strong>${awakeHours} heures par jour</strong>.<br>
+        Passer <strong>${formatAppTime(appHours)}</strong> sur cette application ne représente pas seulement une fraction d'une journée théorique de 24h, mais exactement <strong>${percentWasted}% de ton existence consciente</strong>.
+      `;
+
+      opportunityListEl.innerHTML = `
+        <li class="bg-[#18181c] border border-neutral-800 p-3.5 rounded-lg">
+          <strong class="text-[#ff3b30] font-semibold">30 minutes de marche quotidienne</strong> : Une habitude simple pour préserver sa santé cardiovasculaire et son dos.
+        </li>
+        <li class="bg-[#18181c] border border-neutral-800 p-3.5 rounded-lg">
+          <strong class="text-[#ff3b30] font-semibold">1 à 2 heures de sommeil en plus</strong> : Récupérer du sommeil en retard pour réduire la fatigue chronique et la désaturation nerveuse.
+        </li>
+        <li class="bg-[#18181c] border border-neutral-800 p-3.5 rounded-lg">
+          <strong class="text-[#ff3b30] font-semibold">15 à 20 minutes de lecture calme</strong> : Lire 1 à 2 livres par mois à son rythme, sans chercher la performance.
+        </li>
+        <li class="bg-[#18181c] border border-neutral-800 p-3.5 rounded-lg">
+          <strong class="text-[#ff3b30] font-semibold">Du temps de présence réelle</strong> : Partager un repas ou une conversation sans consulter son téléphone toutes les 5 minutes.
+        </li>
+        <li class="bg-[#18181c] border border-neutral-800 p-3.5 rounded-lg">
+          <strong class="text-[#ff3b30] font-semibold">Du silence et du vagabondage mental</strong> : Laisser le cerveau en "mode par défaut" pour régénérer la capacité de concentration.
+        </li>
+      `;
+    }
+
+    sleepInput.addEventListener('input', update);
+    appInput.addEventListener('input', update);
+
+    update();
+  </script>
+</body>
+</html>
